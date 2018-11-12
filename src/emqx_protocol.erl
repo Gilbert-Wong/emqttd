@@ -678,12 +678,12 @@ get_property(Name, Props, Default) ->
     maps:get(Name, Props, Default).
 
 make_will_msg(#mqtt_packet_connect{proto_ver   = ProtoVer,
-                                   will_props  = WillProps} = Connect) -> 
-    emqx_packet:will_msg(if 
+                                   will_props  = WillProps} = Connect) ->
+    emqx_packet:will_msg(if
                              ProtoVer =:= ?MQTT_PROTO_V5 ->
                                  WillDelayInterval = get_property('Will-Delay-Interval', WillProps, 0),
                                  Connect#mqtt_packet_connect{will_props = set_property('Will-Delay-Interval', WillDelayInterval, WillProps)};
-                             true -> 
+                             true ->
                                  Connect
                          end).
 
@@ -800,10 +800,12 @@ check_sub_acl(TopicFilters, PState) ->
               end
       end, {ok, []}, TopicFilters).
 
-trace(recv, Packet, PState) ->
-    ?LOG(debug, "RECV ~s", [emqx_packet:format(Packet)], PState);
-trace(send, Packet, PState) ->
-    ?LOG(debug, "SEND ~s", [emqx_packet:format(Packet)], PState).
+trace(recv, _Packet, _PState) ->
+    %% ?LOG(debug, "RECV ~s", [emqx_packet:format(Packet)], PState),
+    ok;
+trace(send, _Packet, _PState) ->
+    ok.
+    %% ?LOG(debug, "SEND ~s", [emqx_packet:format(Packet)], PState).
 
 inc_stats(recv, Type, PState = #pstate{recv_stats = Stats}) ->
     PState#pstate{recv_stats = inc_stats(Type, Stats)};
